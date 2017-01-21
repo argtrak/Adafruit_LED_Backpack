@@ -1,4 +1,5 @@
 # Adafruit-LED-Backpack-Library
+Note that this is the original compatibility list, and has not been tested for this fork.
 <!-- START COMPATIBILITY TABLE -->
 
 ## Compatibility
