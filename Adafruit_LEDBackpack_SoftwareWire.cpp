@@ -18,9 +18,11 @@
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
-#include <Wire.h>
+//#include <Wire.h>
+#include <SoftwareWire.h>
 
-#include "Adafruit_LEDBackpack.h"
+
+#include "Adafruit_LEDBackpack_SoftwareWire.h"
 #include "Adafruit_GFX.h"
 
 #ifndef _BV
@@ -184,44 +186,50 @@ static const uint16_t alphafonttable[] PROGMEM =  {
 };
 void Adafruit_LEDBackpack::setBrightness(uint8_t b) {
   if (b > 15) b = 15;
-  Wire.beginTransmission(i2c_addr);
-  Wire.write(HT16K33_CMD_BRIGHTNESS | b);
-  Wire.endTransmission();  
+  wire->beginTransmission(i2c_addr);
+  wire->write(HT16K33_CMD_BRIGHTNESS | b);
+  wire->endTransmission();  
 }
 
 void Adafruit_LEDBackpack::blinkRate(uint8_t b) {
-  Wire.beginTransmission(i2c_addr);
+  wire->beginTransmission(i2c_addr);
   if (b > 3) b = 0; // turn off if not sure
   
-  Wire.write(HT16K33_BLINK_CMD | HT16K33_BLINK_DISPLAYON | (b << 1)); 
-  Wire.endTransmission();
+  wire->write(HT16K33_BLINK_CMD | HT16K33_BLINK_DISPLAYON | (b << 1)); 
+  wire->endTransmission();
 }
 
 Adafruit_LEDBackpack::Adafruit_LEDBackpack(void) {
 }
 
+Adafruit_LEDBackpack::Adafruit_LEDBackpack(uint8_t _sdaPin, uint8_t _sckPin) {
+  wire = new SoftwareWire(_sdaPin, _sckPin);
+}
+
+
+
 void Adafruit_LEDBackpack::begin(uint8_t _addr = 0x70) {
   i2c_addr = _addr;
 
-  Wire.begin();
+  wire->begin();
 
-  Wire.beginTransmission(i2c_addr);
-  Wire.write(0x21);  // turn on oscillator
-  Wire.endTransmission();
+  wire->beginTransmission(i2c_addr);
+  wire->write(0x21);  // turn on oscillator
+  wire->endTransmission();
   blinkRate(HT16K33_BLINK_OFF);
   
   setBrightness(15); // max brightness
 }
 
 void Adafruit_LEDBackpack::writeDisplay(void) {
-  Wire.beginTransmission(i2c_addr);
-  Wire.write((uint8_t)0x00); // start at address $00
+  wire->beginTransmission(i2c_addr);
+  wire->write((uint8_t)0x00); // start at address $00
 
   for (uint8_t i=0; i<8; i++) {
-    Wire.write(displaybuffer[i] & 0xFF);    
-    Wire.write(displaybuffer[i] >> 8);    
+    wire->write(displaybuffer[i] & 0xFF);    
+    wire->write(displaybuffer[i] >> 8);    
   }
-  Wire.endTransmission();  
+  wire->endTransmission();  
 }
 
 void Adafruit_LEDBackpack::clear(void) {
@@ -470,6 +478,12 @@ Adafruit_7segment::Adafruit_7segment(void) {
   position = 0;
 }
 
+Adafruit_7segment::Adafruit_7segment(uint8_t _sdaPin, uint8_t _sckPin) {
+  position = 0;
+  wire = new SoftwareWire(_sdaPin, _sckPin);
+}
+
+
 void Adafruit_7segment::print(unsigned long n, int base)
 {
   if (base == 0) write(n);
@@ -579,13 +593,13 @@ void Adafruit_7segment::drawColon(boolean state) {
 }
 
 void Adafruit_7segment::writeColon(void) {
-    Wire.beginTransmission(i2c_addr);
-    Wire.write((uint8_t)0x04); // start at address $02
+    wire->beginTransmission(i2c_addr);
+    wire->write((uint8_t)0x04); // start at address $02
     
-    Wire.write(displaybuffer[2] & 0xFF);
-    Wire.write(displaybuffer[2] >> 8);
+    wire->write(displaybuffer[2] & 0xFF);
+    wire->write(displaybuffer[2] >> 8);
 
-    Wire.endTransmission();
+    wire->endTransmission();
 }
 
 void Adafruit_7segment::writeDigitNum(uint8_t d, uint8_t num, boolean dot) {

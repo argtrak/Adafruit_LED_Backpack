@@ -17,8 +17,8 @@
   Written by Limor Fried/Ladyada for Adafruit Industries.  
   MIT license, all text above must be included in any redistribution
  ****************************************************/
-#ifndef Adafruit_LEDBackpack_h
-#define Adafruit_LEDBackpack_h
+#ifndef Adafruit_LEDBackpack_SoftwareWire_h
+#define Adafruit_LEDBackpack_SoftwareWire_h
 
 #if (ARDUINO >= 100)
  #include "Arduino.h"
@@ -26,8 +26,13 @@
  #include "WProgram.h"
 #endif
 
-
- #include <Wire.h>
+//#include <Wire.h>
+/****************************************************
+  In order to have more than one I2C bus, to control more displays,
+  we need to use the Software based I2C
+  (This was not allowed by the original library without changes)
+****************************************************/
+#include <SoftwareWire.h>
 
 #include "Adafruit_GFX.h"
 
@@ -56,6 +61,7 @@
 class Adafruit_LEDBackpack {
  public:
   Adafruit_LEDBackpack(void);
+  Adafruit_LEDBackpack(uint8_t _sdaPin, uint8_t _sckPin);
   void begin(uint8_t _addr);
   void setBrightness(uint8_t b);
   void blinkRate(uint8_t b);
@@ -67,6 +73,9 @@ class Adafruit_LEDBackpack {
   void init(uint8_t a);
  protected:
   uint8_t i2c_addr;
+  uint8_t sdaPin;
+  uint8_t sclPin;
+  SoftwareWire* wire;
 };
 
 class Adafruit_AlphaNum4 : public Adafruit_LEDBackpack {
@@ -137,6 +146,8 @@ class Adafruit_BicolorMatrix : public Adafruit_LEDBackpack, public Adafruit_GFX 
 class Adafruit_7segment : public Adafruit_LEDBackpack {
  public:
   Adafruit_7segment(void);
+  Adafruit_7segment(uint8_t _sdaPin, uint8_t _sckPin);
+
   size_t write(uint8_t c);
 
   void print(char, int = BYTE);
@@ -167,5 +178,5 @@ class Adafruit_7segment : public Adafruit_LEDBackpack {
  private:
   uint8_t position;
 };
-#endif // Adafruit_LEDBackpack_h
+#endif // Adafruit_LEDBackpack_SoftwareWire_h
 
