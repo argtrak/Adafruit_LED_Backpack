@@ -18,9 +18,8 @@
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
-//#include <Wire.h>
 #include <SoftwareWire.h>
-
+//#include <Wire.h>
 
 #include "Adafruit_LEDBackpack_SoftwareWire.h"
 #include "Adafruit_GFX.h"
@@ -200,12 +199,16 @@ void Adafruit_LEDBackpack::blinkRate(uint8_t b) {
 }
 
 Adafruit_LEDBackpack::Adafruit_LEDBackpack(void) {
+#ifdef TwoWire_h
+  wire = &Wire;
+#endif
 }
 
 Adafruit_LEDBackpack::Adafruit_LEDBackpack(uint8_t _sdaPin, uint8_t _sckPin) {
+#ifdef SoftwareWire_h
   wire = new SoftwareWire(_sdaPin, _sckPin);
+#endif
 }
-
 
 
 void Adafruit_LEDBackpack::begin(uint8_t _addr = 0x70) {
@@ -479,10 +482,11 @@ Adafruit_7segment::Adafruit_7segment(void) {
 }
 
 Adafruit_7segment::Adafruit_7segment(uint8_t _sdaPin, uint8_t _sckPin) {
+#ifdef SoftwareWire_h
   position = 0;
   wire = new SoftwareWire(_sdaPin, _sckPin);
+#endif
 }
-
 
 void Adafruit_7segment::print(unsigned long n, int base)
 {

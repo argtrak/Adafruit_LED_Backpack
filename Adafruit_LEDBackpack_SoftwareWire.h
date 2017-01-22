@@ -26,13 +26,13 @@
  #include "WProgram.h"
 #endif
 
-//#include <Wire.h>
 /****************************************************
   In order to have more than one I2C bus, to control more displays,
   we need to use the Software based I2C
   (This was not allowed by the original library without changes)
 ****************************************************/
 #include <SoftwareWire.h>
+//#include <Wire.h>
 
 #include "Adafruit_GFX.h"
 
@@ -43,7 +43,6 @@
 #define LED_YELLOW 2
 #define LED_GREEN 3
  
-
 
 #define HT16K33_BLINK_CMD 0x80
 #define HT16K33_BLINK_DISPLAYON 0x01
@@ -73,9 +72,13 @@ class Adafruit_LEDBackpack {
   void init(uint8_t a);
  protected:
   uint8_t i2c_addr;
+#ifdef SoftwareWire_h
   uint8_t sdaPin;
   uint8_t sclPin;
   SoftwareWire* wire;
+#else
+  TwoWire* wire;
+#endif
 };
 
 class Adafruit_AlphaNum4 : public Adafruit_LEDBackpack {
@@ -146,8 +149,9 @@ class Adafruit_BicolorMatrix : public Adafruit_LEDBackpack, public Adafruit_GFX 
 class Adafruit_7segment : public Adafruit_LEDBackpack {
  public:
   Adafruit_7segment(void);
+//#ifdef SoftwareWire_h
   Adafruit_7segment(uint8_t _sdaPin, uint8_t _sckPin);
-
+//#endif
   size_t write(uint8_t c);
 
   void print(char, int = BYTE);
