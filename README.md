@@ -1,4 +1,7 @@
+
 # Adafruit-LED-Backpack-Library
+MODIFIED to use https://github.com/Testato/SoftwareWire in order to control more displays with one arduino at the cost of 2 pin per bus.
+
 Note that this is the original compatibility list, and has not been tested for this fork.
 <!-- START COMPATIBILITY TABLE -->
 
